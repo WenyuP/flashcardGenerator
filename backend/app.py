@@ -8,8 +8,14 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-# Allow specific origins (replace with your frontend URL)
-CORS(app)
+
+# Allow dynamic origins based on deployment environment
+allowed_origins = [
+    "https://flashcard-generator-ckmcqrij0-wenyups-projects.vercel.app",  # Frontend deployment URL
+    "http://localhost:3000"  # Local frontend development URL (optional)
+]
+
+CORS(app, resources={r"/generate": {"origins": allowed_origins}})
 
 # Create OpenAI client with given API key
 client = OpenAI(
