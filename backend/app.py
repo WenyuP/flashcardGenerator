@@ -9,7 +9,7 @@ load_dotenv()
 
 app = Flask(__name__)
 # Allow specific origins (replace with your frontend URL)
-CORS(app, resources={r"/generate": {"origins": "https://flashcard-generator-ccdwm7pq7-wenyups-projects.vercel.app"}})
+CORS(app)
 
 # Create OpenAI client with given API key
 client = OpenAI(
