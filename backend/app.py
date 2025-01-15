@@ -9,18 +9,27 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Allow dynamic origins based on deployment environment
-allowed_origins = [
-    "https://flashcard-generator-ckmcqrij0-wenyups-projects.vercel.app",  # Frontend deployment URL
-    "http://localhost:3000"  # Local frontend development URL (optional)
-]
-
-CORS(app, resources={r"/generate": {"origins": allowed_origins}})
+# Allow specific origins (replace with your frontend URL)
+CORS(app, resources={r"/generate": {"origins": [
+    "https://flashcard-generator-pk9799f14-wenyups-projects.vercel.app",  # Deployed frontend
+    "http://localhost:3000"  # Optional: Local development frontend
+]}})
 
 # Create OpenAI client with given API key
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+@app.before_request
+def handle_preflight():
+    """
+    Handle preflight OPTIONS requests.
+    """
+    if request.method == "OPTIONS":
+        response = app.make_response("")
+        response.headers["Access-Control-Allow-Origin"] = request.headers.get("Origin")
+        response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        return response
+
 
 @app.route('/generate', methods=['POST'])
 def generate_flashcards():
