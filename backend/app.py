@@ -8,7 +8,8 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+# Allow specific origins (replace with your frontend URL)
+CORS(app, resources={r"/generate": {"origins": "https://flashcard-generator-ccdwm7pq7-wenyups-projects.vercel.app"}})
 
 # Create OpenAI client with given API key
 client = OpenAI(
@@ -53,4 +54,4 @@ def generate_flashcards():
 
 if __name__ == '__main__':
     # Use host and port suitable for deployment
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
