@@ -17,7 +17,7 @@ client = OpenAI(
 @app.route('/generate', methods=['POST'])
 def generate_flashcards():
     """
-    Generates flashcards for a given topic using OpenAI's ChatCompletion API.
+    Generate flashcards for a given topic using OpenAI's ChatCompletion API.
     """
     data = request.get_json()
     topic = data.get('topic')
