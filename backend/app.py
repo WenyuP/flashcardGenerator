@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from flask_cors import CORS
 
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
@@ -11,7 +12,7 @@ CORS(app)
 
 # Create OpenAI client with given API key
 client = OpenAI(
-    api_key=process.env.OPENAI_API_KEY
+    api_key=os.getenv("OPENAI_API_KEY")
 )
 
 @app.route('/generate', methods=['POST'])
@@ -51,4 +52,5 @@ def generate_flashcards():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use host and port suitable for deployment
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

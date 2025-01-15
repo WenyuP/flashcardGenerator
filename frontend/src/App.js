@@ -6,6 +6,8 @@ function App() {
   const [error, setError] = useState(""); // State for error messages
   const [loading, setLoading] = useState(false); // State for loading indicator
 
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
   // Function to handle generating flashcards
   const handleGenerate = async () => {
     setError("");
@@ -19,7 +21,7 @@ function App() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/generate", {
+      const response = await fetch(`${apiBaseUrl}/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,18 +29,19 @@ function App() {
         body: JSON.stringify({ topic }),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        const flashcardsWithState = data.flashcards.map((card) => ({
-          ...card,
-          flipped: false, // Add a flipped property to each card
-        }));
-        setFlashcards(flashcardsWithState);
-      } else {
-        setError(data.error || "An error occurred.");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "An error occurred while generating flashcards.");
       }
+
+      const data = await response.json();
+      const flashcardsWithState = data.flashcards.map((card) => ({
+        ...card,
+        flipped: false, // Add a flipped property to each card
+      }));
+      setFlashcards(flashcardsWithState);
     } catch (err) {
-      setError("Unable to connect to the server.");
+      setError(err.message || "Unable to connect to the server.");
     } finally {
       setLoading(false); // Stop loading
     }
@@ -55,7 +58,7 @@ function App() {
     <div
       style={{
         padding: "20px",
-        fontFamily: "'Patrick Hand', 'Quicksand', Arial, sans-serif", // Updated font
+        fontFamily: "'Patrick Hand', 'Quicksand', Arial, sans-serif",
         backgroundColor: "#FFFBEA",
         minHeight: "100vh",
       }}
@@ -87,10 +90,11 @@ function App() {
             padding: "10px",
             width: "300px",
             border: "1px solid #FF69B4",
-            borderRadius: "8px", // Rounded corners for a cuter look
+            borderRadius: "8px",
             outline: "none",
             fontFamily: "'Patrick Hand', 'Quicksand', Arial, sans-serif",
           }}
+          aria-label="Enter a topic"
         />
         <button
           onClick={handleGenerate}
@@ -103,6 +107,7 @@ function App() {
             cursor: "pointer",
             fontFamily: "'Patrick Hand', 'Quicksand', Arial, sans-serif",
           }}
+          aria-label="Generate flashcards"
         >
           Generate
         </button>
@@ -131,6 +136,7 @@ function App() {
               perspective: "1000px",
               width: "300px",
               height: "150px",
+              cursor: "pointer",
             }}
           >
             <div
